@@ -15,6 +15,7 @@ async function pickJobs() {
                 SELECT id FROM jobs
                 WHERE scheduled_at <= NOW()
                 AND picked_at IS NULL
+                AND status != 'cancelled'
                 ORDER BY scheduled_at ASC
                 LIMIT 10
                 FOR UPDATE SKIP LOCKED

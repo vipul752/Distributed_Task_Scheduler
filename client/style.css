@@ -1,0 +1,39 @@
+/* public/style.css */
+body {
+  font-family: Arial;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+}
+
+.form {
+  margin-bottom: 20px;
+}
+
+input,
+select {
+  margin: 5px;
+  padding: 8px;
+}
+
+button {
+  padding: 8px 12px;
+  background: blue;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+td,
+th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}

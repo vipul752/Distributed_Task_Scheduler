@@ -1,0 +1,20 @@
+{
+  "name": "task-scheduler",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "picker": "node src/workers/picker.js",
+    "executor": "node src/workers/executor.js"
+  },
+  "dependencies": {
+    "@bull-board/api": "^6.18.2",
+    "@bull-board/express": "^6.18.2",
+    "bullmq": "^4.18.3",
+    "cors": "^2.8.6",
+    "express": "^4.22.1",
+    "ioredis": "^5.9.3",
+    "nodemailer": "^8.0.1",
+    "pg": "^8.18.0"
+  }
+}

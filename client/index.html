@@ -1,0 +1,47 @@
+<!-- public/index.html -->
+<!doctype html>
+<html>
+  <head>
+    <title>Task Scheduler</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>🚀 Task Scheduler UI</h1>
+
+    <div class="form">
+      <select id="taskType">
+        <option value="create_folder">Create Folder</option>
+        <option value="write_file">Write File</option>
+        <option value="send_email">Send Email</option>
+      </select>
+
+      <input id="input1" placeholder="Path / Email" />
+      <input id="input2" placeholder="Content / Subject" />
+      <input id="input3" placeholder="Message" />
+
+      <label>Schedule Time:</label>
+      <input type="datetime-local" id="scheduleTime" />
+
+      <button onclick="createJob()">Create Job</button>
+    </div>
+
+    <hr />
+
+    <button onclick="loadJobs()">Refresh Jobs</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Task</th>
+        </tr>
+
+
+      </thead>
+      <tbody id="jobsTableBody"></tbody>
+    </table>
+
+    <script src="script.js"></script>
+  </body>
+</html>

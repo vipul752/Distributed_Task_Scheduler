@@ -4,7 +4,7 @@ const pool = require("../config/db");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 
-console.log("Executor started...");
+console.log("Executor started....");
 
 async function executeTask(task) {
   const { type, data } = task;

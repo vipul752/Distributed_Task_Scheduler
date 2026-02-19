@@ -3,6 +3,9 @@ const { Worker } = require("bullmq");
 const pool = require("../config/db");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
+const { exec } = require("child_process");
+const util = require("util");
+const execPromise = util.promisify(exec);
 
 console.log("Executor started....");
 
@@ -39,6 +42,33 @@ async function executeTask(task) {
       });
 
       console.log("📧 Email sent to:", data.to);
+      break;
+
+    case "http_request":
+      const response = await fetch(data.url, {
+        method: data.method || "GET",
+        headers: data.headers || {},
+        body: data.body ? JSON.stringify(data.body) : undefined,
+      });
+      const responseData = await response.text();
+      console.log(
+        `🌐 HTTP ${data.method || "GET"} ${data.url} - Status: ${response.status}`,
+      );
+      console.log("📥 Response:", responseData.substring(0, 200));
+      if (!response.ok) {
+        throw new Error(`HTTP request failed with status ${response.status}`);
+      }
+      break;
+
+    case "run_script":
+      const { stdout, stderr } = await execPromise(data.command, {
+        cwd: data.cwd || process.cwd(),
+        timeout: data.timeout || 30000,
+        maxBuffer: 1024 * 1024,
+      });
+      console.log("💻 Script executed:", data.command);
+      if (stdout) console.log("📤 Output:", stdout.substring(0, 500));
+      if (stderr) console.log("⚠️ Stderr:", stderr.substring(0, 500));
       break;
 
     default:

@@ -8,43 +8,301 @@
   <body>
     <h1>🚀 Task Scheduler UI</h1>
 
-    <div class="form">
-      <select id="taskType">
-        <option value="create_folder">Create Folder</option>
-        <option value="write_file">Write File</option>
-        <option value="send_email">Send Email</option>
-      </select>
-
-      <input id="input1" placeholder="Path / Email" />
-      <input id="input2" placeholder="Content / Subject" />
-      <input id="input3" placeholder="Message" />
-
-      <label>Schedule Time:</label>
-      <input type="datetime-local" id="scheduleTime" />
-
-      <button onclick="createJob()">Create Job</button>
+    <!-- Tab Navigation -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('jobs')">Jobs</button>
+      <button class="tab-btn" onclick="showTab('stats')">Statistics</button>
+      <button class="tab-btn" onclick="showTab('templates')">Templates</button>
     </div>
 
-    <hr />
+    <!-- Jobs Tab -->
+    <div id="jobs-tab" class="tab-content active">
+      <!-- Create Job Form -->
+      <div class="create-job-section">
+        <h3>📝 Create New Job</h3>
 
-    <button onclick="loadJobs()">Refresh Jobs</button>
+        <!-- Task Type Cards -->
+        <div class="task-type-cards">
+          <div
+            class="task-card active"
+            data-type="create_folder"
+            onclick="selectTaskType('create_folder')"
+          >
+            <span class="task-icon">📁</span>
+            <span class="task-name">Create Folder</span>
+          </div>
+          <div
+            class="task-card"
+            data-type="write_file"
+            onclick="selectTaskType('write_file')"
+          >
+            <span class="task-icon">📄</span>
+            <span class="task-name">Write File</span>
+          </div>
+          <div
+            class="task-card"
+            data-type="send_email"
+            onclick="selectTaskType('send_email')"
+          >
+            <span class="task-icon">📧</span>
+            <span class="task-name">Send Email</span>
+          </div>
+          <div
+            class="task-card"
+            data-type="http_request"
+            onclick="selectTaskType('http_request')"
+          >
+            <span class="task-icon">🌐</span>
+            <span class="task-name">HTTP Request</span>
+          </div>
+          <div
+            class="task-card"
+            data-type="run_script"
+            onclick="selectTaskType('run_script')"
+          >
+            <span class="task-icon">💻</span>
+            <span class="task-name">Run Script</span>
+          </div>
+        </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Task</th>
-          <th>Scheduled</th>
-          <th>Countdown</th>
-          <th>Picked</th>
-          <th>Started</th>
-          <th>Completed</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="jobsTableBody"></tbody>
-    </table>
+        <input type="hidden" id="taskType" value="create_folder" />
+
+        <!-- Dynamic Input Fields -->
+        <div class="input-group">
+          <label id="label1">Folder Path</label>
+          <input
+            id="input1"
+            placeholder="e.g., /tmp/my-folder"
+            class="large-input"
+          />
+        </div>
+        <div class="input-group" id="inputGroup2">
+          <label id="label2">Additional Option</label>
+          <input id="input2" placeholder="(not used)" class="large-input" />
+        </div>
+        <div class="input-group" id="inputGroup3">
+          <label id="label3">Additional Option</label>
+          <input id="input3" placeholder="(not used)" class="large-input" />
+        </div>
+
+        <!-- Schedule Section -->
+        <div class="schedule-section">
+          <label>⏰ Schedule Time</label>
+          <div class="schedule-row">
+            <input
+              type="datetime-local"
+              id="scheduleTime"
+              class="large-input"
+            />
+            <div class="quick-schedule">
+              <button
+                type="button"
+                onclick="quickSchedule(1)"
+                class="quick-btn"
+              >
+                +1 min
+              </button>
+              <button
+                type="button"
+                onclick="quickSchedule(5)"
+                class="quick-btn"
+              >
+                +5 min
+              </button>
+              <button
+                type="button"
+                onclick="quickSchedule(30)"
+                class="quick-btn"
+              >
+                +30 min
+              </button>
+              <button
+                type="button"
+                onclick="quickSchedule(60)"
+                class="quick-btn"
+              >
+                +1 hr
+              </button>
+              <button
+                type="button"
+                onclick="quickSchedule(1440)"
+                class="quick-btn"
+              >
+                +1 day
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button onclick="createJob()" class="create-btn">
+            🚀 Create Job
+          </button>
+          <button onclick="saveAsTemplate()" class="secondary">
+            💾 Save as Template
+          </button>
+          <button onclick="clearForm()" class="secondary">🗑️ Clear</button>
+        </div>
+      </div>
+
+      <hr />
+
+      <!-- Search & Filter -->
+      <div class="filters">
+        <h3>Search & Filter</h3>
+        <input type="text" id="searchInput" placeholder="Search tasks..." />
+        <select id="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="picked">Picked</option>
+          <option value="running">Running</option>
+          <option value="completed">Completed</option>
+          <option value="failed">Failed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="taskTypeFilter">
+          <option value="all">All Task Types</option>
+          <option value="create_folder">Create Folder</option>
+          <option value="write_file">Write File</option>
+          <option value="send_email">Send Email</option>
+          <option value="http_request">HTTP Request</option>
+          <option value="run_script">Run Script</option>
+        </select>
+        <input type="date" id="startDate" placeholder="Start Date" />
+        <input type="date" id="endDate" placeholder="End Date" />
+        <button onclick="loadJobs()">Apply Filters</button>
+        <button onclick="clearFilters()" class="secondary">Clear</button>
+      </div>
+
+      <hr />
+
+      <!-- Bulk Actions -->
+      <div class="bulk-actions">
+        <button onclick="selectAll()">Select All</button>
+        <button onclick="deselectAll()">Deselect All</button>
+        <button onclick="bulkCancel()" class="danger">Cancel Selected</button>
+        <button onclick="bulkRetry()" class="warning">Retry Selected</button>
+        <button onclick="exportCSV()" class="secondary">Export CSV</button>
+        <button onclick="loadJobs()">Refresh</button>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button onclick="prevPage()" id="prevBtn" disabled>← Previous</button>
+        <span id="pageInfo">Page 1 of 1</span>
+        <button onclick="nextPage()" id="nextBtn" disabled>Next →</button>
+        <select id="limitSelect" onchange="loadJobs()">
+          <option value="10">10 per page</option>
+          <option value="20" selected>20 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+        </select>
+      </div>
+
+      <!-- Jobs Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                id="selectAllCheckbox"
+                onchange="toggleSelectAll()"
+              />
+            </th>
+            <th>ID</th>
+            <th>Task</th>
+            <th>Scheduled</th>
+            <th>Countdown</th>
+            <th>Picked</th>
+            <th>Started</th>
+            <th>Completed</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="jobsTableBody"></tbody>
+      </table>
+
+      <div class="pagination">
+        <button onclick="prevPage()" id="prevBtn2" disabled>← Previous</button>
+        <span id="pageInfo2">Page 1 of 1</span>
+        <button onclick="nextPage()" id="nextBtn2" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- Statistics Tab -->
+    <div id="stats-tab" class="tab-content">
+      <h2>Job Statistics</h2>
+      <button onclick="loadStats()">Refresh Stats</button>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Status Distribution</h3>
+          <div id="statusStats"></div>
+        </div>
+        <div class="stat-card">
+          <h3>Task Types</h3>
+          <div id="taskTypeStats"></div>
+        </div>
+        <div class="stat-card">
+          <h3>Recent Activity</h3>
+          <div id="recentStats"></div>
+        </div>
+        <div class="stat-card">
+          <h3>Performance</h3>
+          <div id="perfStats"></div>
+        </div>
+      </div>
+
+      <div class="stat-card full-width">
+        <h3>Jobs Per Day (Last 7 Days)</h3>
+        <div id="dailyStats"></div>
+      </div>
+    </div>
+
+    <!-- Templates Tab -->
+    <div id="templates-tab" class="tab-content">
+      <h2>Job Templates</h2>
+      <button onclick="loadTemplates()">Refresh Templates</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Task Type</th>
+            <th>Task Data</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="templatesTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Template Modal -->
+    <div id="templateModal" class="modal">
+      <div class="modal-content">
+        <h3>Save as Template</h3>
+        <input type="text" id="templateName" placeholder="Template name" />
+        <button onclick="confirmSaveTemplate()">Save</button>
+        <button onclick="closeModal()" class="secondary">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Use Template Modal -->
+    <div id="useTemplateModal" class="modal">
+      <div class="modal-content">
+        <h3>Schedule Job from Template</h3>
+        <input type="datetime-local" id="templateScheduleTime" />
+        <input type="hidden" id="selectedTemplateId" />
+        <button onclick="confirmUseTemplate()">Create Job</button>
+        <button onclick="closeUseTemplateModal()" class="secondary">
+          Cancel
+        </button>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>

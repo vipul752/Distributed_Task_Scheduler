@@ -87,6 +87,17 @@ CREATE TABLE jobs (
 );
 ```
 
+### Job Templates Table
+
+```sql
+CREATE TABLE job_templates (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    task JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
 ## API Endpoints
 
 ### Create Job
@@ -108,13 +119,71 @@ Content-Type: application/json
 }
 ```
 
-### List Jobs
+### List Jobs (with Search, Filter & Pagination)
 
 ```http
-GET /api/jobs
+GET /api/jobs?page=1&limit=20&status=pending&taskType=send_email&search=user&startDate=2026-02-01&endDate=2026-02-28
 ```
 
-Returns the 50 most recent jobs.
+Returns paginated jobs with filters.
+
+### Get Statistics
+
+```http
+GET /api/stats
+```
+
+Returns job statistics including status counts, task type distribution, and performance metrics.
+
+### Export Jobs to CSV
+
+```http
+GET /api/jobs/export?status=completed&taskType=send_email
+```
+
+Downloads a CSV file of jobs matching the filters.
+
+### Duplicate Job
+
+```http
+POST /api/duplicate/:id
+Content-Type: application/json
+
+{
+  "scheduled_at": "2026-02-20T10:00:00Z"
+}
+```
+
+### Bulk Cancel
+
+```http
+POST /api/bulk/cancel
+Content-Type: application/json
+
+{
+  "ids": [1, 2, 3, 4, 5]
+}
+```
+
+### Bulk Retry
+
+```http
+POST /api/bulk/retry
+Content-Type: application/json
+
+{
+  "ids": [6, 7, 8]
+}
+```
+
+### Job Templates
+
+```http
+GET /api/templates          # List all templates
+POST /api/templates         # Create template { name, task }
+DELETE /api/templates/:id   # Delete template
+POST /api/templates/:id/use # Create job from template { scheduled_at }
+```
 
 ### Retry Job
 
